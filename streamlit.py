@@ -3,6 +3,9 @@ import cv2
 from PIL import Image,ImageEnhance
 import numpy as np 
 import os
+import numpy as np
+from keras.preprocessing import image
+from keras.models import load_model
 
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -130,7 +133,6 @@ def main():
 				result_img = detect_smiles(our_image)
 				st.image(result_img)
 
-
 			elif feature_choice == 'Eyes':
 				result_img = detect_eyes(our_image)
 				st.image(result_img)
@@ -147,12 +149,29 @@ def main():
 
 
 	elif choice == 'About':
-		st.subheader("About Face Detection App")
-		st.markdown("Built with Streamlit by [JCharisTech](https://www.jcharistech.com/)")
-		st.text("Jesse E.Agbe(JCharis)")
-		st.success("Jesus Saves @JCharisTech")
+		st.subheader("Recognise face")
+		st.markdown("Built by Omkar, Mahir and Akhil")
+		st.text("A")
+		image_file = st.file_uploader("Upload Image",type=['jpg','png','jpeg'])
 
+		if image_file is not None:
+			our_image = Image.open(image_file)
+			st.text("Original Image")
+			# st.write(type(our_image))
+			st.image(our_image)
+		if st.button("Process"):
+
+			model = load_model('vgg16f.h5')
+			
+			img_width, img_height = 224,224
+			img = image.load_img(image_file, target_size = (img_width, img_height))
+			img = image.img_to_array(img)
+			img = np.expand_dims(img, axis = 0)
+			pred = model.predict(img)
+			st.success("Success")
+			pred=model.predict(img)
+			st.text(pred)
 
 
 if __name__ == '__main__':
-		main()	
+	main()	
